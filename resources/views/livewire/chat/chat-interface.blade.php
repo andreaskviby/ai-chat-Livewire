@@ -1,4 +1,4 @@
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full" wire:poll.2s="checkForNewMessages">
     {{-- Chat Header --}}
     <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <h1 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $chat->title }}</h1>
@@ -103,7 +103,7 @@
                     @disabled($isStreaming)
                 >
                     @foreach(App\Enums\ModelName::getAvailableModels() as $modelOption)
-                        <option value="{{ $modelOption['value'] }}">{{ $modelOption['label'] }}</option>
+                        <option value="{{ $modelOption['id'] }}">{{ $modelOption['name'] }}</option>
                     @endforeach
                 </select>
                 <button 

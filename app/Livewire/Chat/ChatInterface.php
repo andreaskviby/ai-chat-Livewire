@@ -8,6 +8,7 @@ use App\Models\Chat;
 use App\Models\Message;
 use App\Enums\ModelName;
 use Livewire\Component;
+use App\Jobs\ProcessChatMessage;
 use Illuminate\Support\Facades\Auth;
 
 class ChatInterface extends Component
@@ -17,11 +18,13 @@ class ChatInterface extends Component
     public ModelName $model = ModelName::GPT_4_1_NANO;
     public bool $isStreaming = false;
     public array $messages = [];
+    public int $lastMessageCount = 0;
 
     public function mount(Chat $chat)
     {
         $this->chat = $chat;
         $this->loadMessages();
+        $this->lastMessageCount = count($this->messages);
     }
 
     public function loadMessages()
@@ -30,6 +33,21 @@ class ChatInterface extends Component
             ->orderBy('created_at')
             ->get()
             ->toArray();
+    }
+
+    public function checkForNewMessages()
+    {
+        // Refresh the chat to get updated messages
+        $this->chat->refresh();
+        $this->loadMessages();
+        
+        // If we have new messages and were streaming, stop streaming
+        if (count($this->messages) > $this->lastMessageCount) {
+            $this->lastMessageCount = count($this->messages);
+            if ($this->isStreaming) {
+                $this->isStreaming = false;
+            }
+        }
     }
 
     public function sendMessage()
@@ -47,12 +65,16 @@ class ChatInterface extends Component
             'attachments' => '[]',
         ]);
 
+        $messageText = $this->message;
         $this->message = '';
         $this->loadMessages();
+        $this->lastMessageCount = count($this->messages);
 
-        // Trigger streaming response
+        // Start streaming state
         $this->isStreaming = true;
-        $this->dispatch('start-streaming', ['chatId' => $this->chat->id, 'model' => $this->model->value]);
+
+        // Dispatch job to process the message
+        ProcessChatMessage::dispatch($this->chat, $this->model);
     }
 
     public function updateMessage($messageId, $upvoted)
