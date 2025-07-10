@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreChatRequest;
@@ -19,17 +18,9 @@ final class ChatController extends Controller
         $this->authorizeResource(Chat::class, 'chat');
     }
 
-    public function index(): Response
+    public function index(): View
     {
-        $chatHistory = null;
-
-        if (Auth::check()) {
-            $chatHistory = Auth::user()->chats()->orderBy('updated_at', 'desc')->paginate(25);
-        }
-
-        return Inertia::render('Chat/Index', [
-            'chatHistory' => Inertia::deepMerge($chatHistory),
-        ]);
+        return view('pages.chat.index');
     }
 
     public function store(StoreChatRequest $request): RedirectResponse
@@ -42,18 +33,9 @@ final class ChatController extends Controller
         return to_route('chats.show', ['chat' => $chat]);
     }
 
-    public function show(Chat $chat): Response
+    public function show(Chat $chat): View
     {
-        $chatHistory = null;
-
-        if (Auth::check()) {
-            $chatHistory = Auth::user()->chats()->orderBy('updated_at', 'desc')->paginate(25);
-        }
-
-        return Inertia::render('Chat/Show', [
-            'chat' => fn () => $chat->load('messages'),
-            'chatHistory' => Inertia::deepMerge($chatHistory),
-        ]);
+        return view('pages.chat.show', compact('chat'));
     }
 
     public function update(Chat $chat, UpdateChatRequest $request): RedirectResponse
