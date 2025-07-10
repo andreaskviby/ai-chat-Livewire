@@ -1,38 +1,39 @@
 ![prism](https://github.com/user-attachments/assets/e97667bc-1335-48f1-8c23-474d3f31f49a)
 
-# AI Chat - Laravel Starter Kit
+# AI Chat - Laravel Livewire Starter Kit
 
-A modern AI chat starter kit built with Laravel, featuring real-time streaming responses using Prism, Inertia.js, Vue.js, and TailwindCSS.
+A modern AI chat starter kit built with Laravel Livewire, featuring real-time AI responses using Prism and TailwindCSS.
 
 ## Introduction
 
-Prism Chat provides a solid foundation for building AI-powered chat applications with Laravel. It leverages Laravel's powerful ecosystem combined with the [Prism PHP SDK](https://prismphp.com/) to deliver real-time streaming responses, creating a dynamic and engaging user experience.
+This AI Chat application provides a solid foundation for building AI-powered chat applications with Laravel Livewire. It leverages Laravel's powerful ecosystem combined with the [Prism PHP SDK](https://prismphp.com/) to deliver AI responses through background job processing, creating a dynamic and engaging user experience.
 
 ## Features
 
-- **Real-time AI Responses**: Stream AI responses as they're generated
+- **Real-time AI Responses**: AI responses processed through background jobs with live polling updates
 - **Reasoning Support**: Built-in support for AI models with reasoning capabilities
 - **Multiple AI Providers**: Support for OpenAI, Anthropic, Google Gemini, Ollama, Groq, Mistral, DeepSeek, xAI, and VoyageAI
 - **Authentication System**: Built-in user authentication and management
 - **Appearance Settings**: Light/dark mode support with system preference detection
 - **Custom Theming**: Shadcn integration allows easy theme customization via CSS variables
 - **Chat Sharing**: Share conversations with other users
+- **Livewire Components**: Modern reactive UI components for seamless user interactions
 
 ## Tech Stack
 
 - **Backend**: Laravel 12.x, Prism PHP SDK
-- **Frontend**: Vue.js 3, Inertia.js 2.x
+- **Frontend**: Laravel Livewire with Blade templates
 - **Styling**: TailwindCSS 4.x, Shadcn components
 - **Database**: SQLite (configurable to MySQL/PostgreSQL)
 - **Authentication**: Laravel Sanctum
-- **Real-time**: Server-Sent Events (SSE)
+- **Real-time**: Background job processing with Livewire polling
 
 ## Prerequisites
 
 - **PHP 8.3+** with extensions:
   - curl, dom, fileinfo, filter, hash, mbstring, openssl, pcre, pdo, session, tokenizer, xml
 - **Composer 2.x**
-- **Node.js 18+** and npm/bun
+- **Node.js 18+** and npm/bun (for asset compilation)
 - **SQLite** (or MySQL/PostgreSQL if preferred)
 
 ## Installation
@@ -54,7 +55,7 @@ cd my-ai-chat
 After installation:
 
 ```bash
-# Install frontend dependencies
+# Install frontend dependencies (for asset compilation)
 npm install
 
 # Generate application key (if not done automatically)
@@ -70,7 +71,7 @@ php artisan migrate
 composer run dev
 ```
 
-The `composer run dev` command runs multiple processes concurrently. If you encounter issues, run them separately.
+The `composer run dev` command runs multiple processes concurrently: Laravel server, queue worker for background jobs, logs monitoring, and Vite for asset compilation. If you encounter issues, run them separately.
 
 ## Configuration
 
@@ -84,11 +85,11 @@ cp .env.example .env
 
 ### Theme Customization
 
-The application uses Shadcn components with TailwindCSS for styling. To customize the theme:
+The application uses Shadcn components with TailwindCSS for styling. All UI components are rendered server-side with Livewire. To customize the theme:
 
 1. Visit [tweakcn.com](https://tweakcn.com) to generate custom CSS variables
 2. Update the CSS variables in `resources/css/app.css`
-3. The changes will automatically apply to all Shadcn components
+3. The changes will automatically apply to all Shadcn components across Livewire views
 
 ### AI Provider Configuration
 
@@ -184,12 +185,12 @@ Deploy directly with [Laravel Cloud](https://cloud.laravel.com/) for seamless in
 
 ## Roadmap
 
-We're continuously working to enhance the AI Chat experience. Here's what's coming:
+This application has been successfully converted from Inertia.js + Vue.js to Laravel Livewire for simplified architecture and better maintainability. We're continuously working to enhance the AI Chat experience. Here's what's coming:
 
 - **Multimodal Support**: Image, audio, and video processing capabilities
 - **Tool Call Support**: Function calling and tool integration for enhanced AI interactions
 - **Image Generation**: Built-in support for AI image generation models
-- **Resumable Streams**: Ability to pause and resume streaming conversations
+- **Enhanced Real-time Features**: Improved polling mechanisms and live updates
 
 ## Security
 
@@ -207,17 +208,25 @@ If you discover security vulnerabilities, please email [pushpak1300@gmail.com](m
 - Verify the API key is valid and has sufficient credits/quota
 - Check that the provider service is operational
 
-**Streaming not working:**
+**AI responses not appearing:**
 
-- Verify your server supports Server-Sent Events (SSE)
-- Check firewall settings for long-running connections
-- Ensure proper CORS configuration for cross-origin requests
+- Verify that the queue worker is running (`php artisan queue:listen`)
+- Check that background job processing is working correctly
+- Ensure Livewire polling is functioning (every 2 seconds by default)
+- Review application logs for any job failures
+
+**Livewire components not updating:**
+
+- Verify that Livewire is properly installed (`composer require livewire/livewire`)
+- Check browser console for JavaScript errors
+- Ensure proper CSRF token configuration
 
 **Model not appearing in UI:**
 
 - Confirm the model is added to `ModelName` enum
 - Verify the provider is properly configured
-- Check browser console for JavaScript errors
+- Check that Livewire components are rendering correctly
+- Review browser console for JavaScript errors
 
 ### Getting Help
 
@@ -243,8 +252,12 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# Run development server
-composer dev
+# Set up database
+touch database/database.sqlite
+php artisan migrate
+
+# Run development server with all services
+composer run dev
 ```
 
 ## License
@@ -253,4 +266,4 @@ This project is open-sourced software licensed under the [MIT license](https://o
 
 ---
 
-Built with ❤️ using [Laravel](https://laravel.com), [Prism](https://prismphp.com), and [Inertia.js](https://inertiajs.com)
+Built with ❤️ using [Laravel](https://laravel.com), [Livewire](https://livewire.laravel.com), and [Prism](https://prismphp.com)
