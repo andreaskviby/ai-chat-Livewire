@@ -2,7 +2,7 @@
   "$schema": "https://getcomposer.org/schema.json",
   "name": "pushpak1300/ai-chat",
   "type": "project",
-  "description": "A modern AI chat starter kit built with Laravel Livewire, featuring real-time streaming responses using Prism and TailwindCSS.",
+  "description": "A modern AI chat starter kit built with Laravel Livewire, featuring real-time AI responses using Prism and TailwindCSS.",
   "keywords": [
     "laravel",
     "framework"
